@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Scan {{ nfc_tag_id }} · Plant NFC Tracker{% endblock %}
+{% block content %}
+{% if plant %}
+<div x-data="{tab: ''}" class="space-y-3">
+  <div class="bg-white rounded-xl shadow p-4">
+    <p class="text-xs text-gray-500">NFC Tag: {{ nfc_tag_id }}</p>
+    <h1 class="text-2xl font-semibold mt-1">{{ plant.name }}</h1>
+    <p class="text-gray-600">{{ plant.strain_name }} · {{ plant.current_stage.value }} · {{ plant.pot_size }}</p>
+    <a href="/plant/{{ plant.id }}" class="text-green-700 underline text-sm">Open full profile</a>
+  </div>
+
+  <div class="grid grid-cols-2 gap-2 text-sm">
+    <button @click="tab='water'" class="bg-blue-600 text-white rounded-lg p-3">💧 Quick Water</button>
+    <button @click="tab='feed'" class="bg-purple-600 text-white rounded-lg p-3">🧪 Quick Feed</button>
+    <button @click="tab='train'" class="bg-amber-600 text-white rounded-lg p-3">✂️ Prune/Train</button>
+    <button @click="tab='photo'" class="bg-emerald-600 text-white rounded-lg p-3">📸 Quick Photo</button>
+    <button @click="tab='stage'" class="bg-gray-700 text-white rounded-lg p-3 col-span-2">🔄 Stage / Pot Update</button>
+  </div>
+
+  <div x-show="tab==='water'" class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Quick Water</h2>
+    <form method="post" action="/plant/{{ plant.id }}/logs/quick-water" class="space-y-2">
+      <input name="input_ph" step="0.01" placeholder="Input pH (optional)" class="w-full border rounded-lg px-3 py-2" />
+      <input name="input_ec" step="0.01" placeholder="Input EC (optional)" class="w-full border rounded-lg px-3 py-2" />
+      <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
+      <button class="w-full bg-blue-600 text-white rounded-lg py-2">Save Watering</button>
+    </form>
+  </div>
+
+  <div x-show="tab==='feed'" class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Quick Feed</h2>
+    <form method="post" action="/plant/{{ plant.id }}/logs/quick-feed" class="space-y-2">
+      <input name="input_ph" placeholder="Input pH" class="w-full border rounded-lg px-3 py-2" />
+      <input name="input_ec" placeholder="Input EC" class="w-full border rounded-lg px-3 py-2" />
+      <input name="runoff_ph" placeholder="Runoff pH (optional)" class="w-full border rounded-lg px-3 py-2" />
+      <input name="runoff_ec" placeholder="Runoff EC (optional)" class="w-full border rounded-lg px-3 py-2" />
+      <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
+      <button class="w-full bg-purple-600 text-white rounded-lg py-2">Save Feeding</button>
+    </form>
+  </div>
+
+  <div x-show="tab==='train'" class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Quick Prune/Train</h2>
+    <form method="post" action="/plant/{{ plant.id }}/logs/quick-train" class="space-y-2">
+      <select name="training_type" class="w-full border rounded-lg px-3 py-2">
+        <option value="Topping">Topping</option>
+        <option value="FIM">FIM</option>
+        <option value="LST">LST</option>
+        <option value="Defoliation">Defoliation</option>
+        <option value="Supercropping">Supercropping</option>
+      </select>
+      <textarea name="notes" placeholder="Quick notes" class="w-full border rounded-lg px-3 py-2"></textarea>
+      <button class="w-full bg-amber-600 text-white rounded-lg py-2">Save Training</button>
+    </form>
+  </div>
+
+  <div x-show="tab==='photo'" class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Quick Photo Upload</h2>
+    <form method="post" action="/plant/{{ plant.id }}/logs/quick-photo" enctype="multipart/form-data" class="space-y-2">
+      <input type="file" name="photo" accept="image/*" capture="environment" required class="w-full border rounded-lg px-3 py-2" />
+      <input name="caption" placeholder="Caption" class="w-full border rounded-lg px-3 py-2" />
+      <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
+      <button class="w-full bg-emerald-600 text-white rounded-lg py-2">Upload Photo</button>
+    </form>
+  </div>
+
+  <div x-show="tab==='stage'" class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Stage / Pot Update</h2>
+    <form method="post" action="/plant/{{ plant.id }}/logs/stage-pot-update" class="space-y-2">
+      <select name="current_stage" class="w-full border rounded-lg px-3 py-2">
+        {% for item in stages %}
+        <option value="{{ item }}" {% if plant.current_stage.value == item %}selected{% endif %}>{{ item }}</option>
+        {% endfor %}
+      </select>
+      <input name="pot_size" value="{{ plant.pot_size }}" class="w-full border rounded-lg px-3 py-2" />
+      <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
+      <button class="w-full bg-gray-800 text-white rounded-lg py-2">Save Stage/Pot</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="bg-white rounded-xl shadow p-4 space-y-3">
+  <h1 class="text-xl font-semibold">Unrecognized NFC Tag</h1>
+  <p class="text-gray-700">Tag <strong>{{ nfc_tag_id }}</strong> is not assigned yet.</p>
+  <form method="post" action="/scan/{{ nfc_tag_id }}/assign" class="space-y-2">
+    <select name="plant_id" class="w-full border rounded-lg px-3 py-2" required>
+      <option value="">Select a plant</option>
+      {% for p in plants %}
+      <option value="{{ p.id }}">{{ p.name }} ({{ p.strain_name }})</option>
+      {% endfor %}
+    </select>
+    <button class="w-full bg-green-700 text-white rounded-lg py-2">Assign Tag</button>
+  </form>
+  <a href="/plants/new" class="block text-center w-full border rounded-lg py-2">Create New Plant</a>
+</div>
+{% endif %}
+{% endblock %}

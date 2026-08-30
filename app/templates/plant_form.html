@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}New Plant · Plant NFC Tracker{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl shadow p-4">
+  <h1 class="text-xl font-semibold mb-3">Add New Plant</h1>
+  <form method="post" action="/plants/new" class="space-y-2">
+    <input name="name" placeholder="Plant name" required class="w-full border rounded-lg px-3 py-2" />
+    <input name="strain_name" placeholder="Strain name" required class="w-full border rounded-lg px-3 py-2" />
+    <input name="phenotype_code" placeholder="Phenotype code (optional)" class="w-full border rounded-lg px-3 py-2" />
+    <input name="nfc_tag_id" placeholder="NFC tag ID (optional)" class="w-full border rounded-lg px-3 py-2" />
+    <input type="date" name="sprout_date" value="{{ today }}" required class="w-full border rounded-lg px-3 py-2" />
+    <select name="current_stage" class="w-full border rounded-lg px-3 py-2">
+      {% for stage in stages %}
+      <option value="{{ stage }}">{{ stage }}</option>
+      {% endfor %}
+    </select>
+    <input name="pot_size" placeholder="Pot size" required class="w-full border rounded-lg px-3 py-2" />
+    <input name="substrate_type" placeholder="Substrate type" required class="w-full border rounded-lg px-3 py-2" />
+    <input name="nutrient_line" placeholder="Nutrient line" required class="w-full border rounded-lg px-3 py-2" />
+    <div class="grid grid-cols-2 gap-2">
+      <input type="number" min="1" max="5" name="care_maintenance_rating" placeholder="Care rating 1-5" class="w-full border rounded-lg px-3 py-2" />
+      <input type="number" min="1" max="5" name="overall_pheno_rating" placeholder="Pheno rating 1-5" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+    <select name="status" class="w-full border rounded-lg px-3 py-2">
+      {% for s in statuses %}
+      <option value="{{ s }}" {% if s == 'Active' %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
+    <button class="w-full bg-green-700 text-white rounded-lg py-2">Create Plant</button>
+  </form>
+</div>
+{% endblock %}
