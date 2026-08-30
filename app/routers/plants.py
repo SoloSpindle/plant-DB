@@ -172,6 +172,7 @@ def scan_view(request: Request, nfc_tag_id: str, db: Session = Depends(get_db)):
 
 @router.post("/scan/{nfc_tag_id}/assign")
 def assign_tag(
+    request: Request,
     nfc_tag_id: str,
     plant_id: int = Form(...),
     db: Session = Depends(get_db),
@@ -187,7 +188,7 @@ def assign_tag(
     plant.nfc_tag_id = nfc_tag_id
     plant.updated_at = datetime.utcnow()
     db.commit()
-    return RedirectResponse(url=f"/scan/{nfc_tag_id}", status_code=303)
+    return RedirectResponse(url=request.url_for("scan_view", nfc_tag_id=nfc_tag_id), status_code=303)
 
 
 @router.get("/plant/{plant_id}")

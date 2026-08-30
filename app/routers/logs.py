@@ -23,19 +23,12 @@ def _to_float(value: str | None) -> float | None:
     return float(raw)
 
 
-def _redirect_target(return_to: str | None, plant_id: int) -> str:
-    if return_to and return_to.startswith("/"):
-        return return_to
-    return f"/plant/{plant_id}"
-
-
 @router.post("/plant/{plant_id}/logs/quick-water")
 def quick_water(
     plant_id: int,
     input_ph: str = Form(""),
     input_ec: str = Form(""),
     notes: str = Form(""),
-    return_to: str = Form(""),
     db: Session = Depends(get_db),
 ):
     if not db.query(Plant).filter(Plant.id == plant_id).first():
@@ -52,7 +45,7 @@ def quick_water(
         )
     )
     db.commit()
-    return RedirectResponse(url=_redirect_target(return_to, plant_id), status_code=303)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/plant/{plant_id}/logs/quick-feed")
@@ -63,7 +56,6 @@ def quick_feed(
     runoff_ph: str = Form(""),
     runoff_ec: str = Form(""),
     notes: str = Form(""),
-    return_to: str = Form(""),
     db: Session = Depends(get_db),
 ):
     if not db.query(Plant).filter(Plant.id == plant_id).first():
@@ -82,7 +74,7 @@ def quick_feed(
         )
     )
     db.commit()
-    return RedirectResponse(url=_redirect_target(return_to, plant_id), status_code=303)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/plant/{plant_id}/logs/quick-train")
@@ -90,7 +82,6 @@ def quick_train(
     plant_id: int,
     training_type: str = Form(""),
     notes: str = Form(""),
-    return_to: str = Form(""),
     db: Session = Depends(get_db),
 ):
     if not db.query(Plant).filter(Plant.id == plant_id).first():
@@ -106,7 +97,7 @@ def quick_train(
         )
     )
     db.commit()
-    return RedirectResponse(url=_redirect_target(return_to, plant_id), status_code=303)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/plant/{plant_id}/logs/quick-photo")
@@ -114,7 +105,6 @@ async def quick_photo(
     plant_id: int,
     caption: str = Form(""),
     notes: str = Form(""),
-    return_to: str = Form(""),
     photo: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
@@ -147,7 +137,7 @@ async def quick_photo(
         )
     )
     db.commit()
-    return RedirectResponse(url=_redirect_target(return_to, plant_id), status_code=303)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/plant/{plant_id}/logs/stage-pot-update")
@@ -156,7 +146,6 @@ def quick_stage_pot(
     current_stage: str = Form(...),
     pot_size: str = Form(...),
     notes: str = Form(""),
-    return_to: str = Form(""),
     db: Session = Depends(get_db),
 ):
     plant = db.query(Plant).filter(Plant.id == plant_id).first()
@@ -187,4 +176,4 @@ def quick_stage_pot(
     )
     db.commit()
 
-    return RedirectResponse(url=_redirect_target(return_to, plant_id), status_code=303)
+    return RedirectResponse(url="/", status_code=303)

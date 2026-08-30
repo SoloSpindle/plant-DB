@@ -21,7 +21,6 @@
   <div x-show="tab==='water'" class="bg-white rounded-xl shadow p-4">
     <h2 class="font-semibold mb-2">Quick Water</h2>
     <form method="post" action="/plant/{{ plant.id }}/logs/quick-water" class="space-y-2">
-      <input type="hidden" name="return_to" value="/scan/{{ nfc_tag_id }}" />
       <input name="input_ph" step="0.01" placeholder="Input pH (optional)" class="w-full border rounded-lg px-3 py-2" />
       <input name="input_ec" step="0.01" placeholder="Input EC (optional)" class="w-full border rounded-lg px-3 py-2" />
       <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
@@ -32,7 +31,6 @@
   <div x-show="tab==='feed'" class="bg-white rounded-xl shadow p-4">
     <h2 class="font-semibold mb-2">Quick Feed</h2>
     <form method="post" action="/plant/{{ plant.id }}/logs/quick-feed" class="space-y-2">
-      <input type="hidden" name="return_to" value="/scan/{{ nfc_tag_id }}" />
       <input name="input_ph" placeholder="Input pH" class="w-full border rounded-lg px-3 py-2" />
       <input name="input_ec" placeholder="Input EC" class="w-full border rounded-lg px-3 py-2" />
       <input name="runoff_ph" placeholder="Runoff pH (optional)" class="w-full border rounded-lg px-3 py-2" />
@@ -45,7 +43,6 @@
   <div x-show="tab==='train'" class="bg-white rounded-xl shadow p-4">
     <h2 class="font-semibold mb-2">Quick Prune/Train</h2>
     <form method="post" action="/plant/{{ plant.id }}/logs/quick-train" class="space-y-2">
-      <input type="hidden" name="return_to" value="/scan/{{ nfc_tag_id }}" />
       <select name="training_type" class="w-full border rounded-lg px-3 py-2">
         <option value="Topping">Topping</option>
         <option value="FIM">FIM</option>
@@ -61,7 +58,6 @@
   <div x-show="tab==='photo'" class="bg-white rounded-xl shadow p-4">
     <h2 class="font-semibold mb-2">Quick Photo Upload</h2>
     <form method="post" action="/plant/{{ plant.id }}/logs/quick-photo" enctype="multipart/form-data" class="space-y-2">
-      <input type="hidden" name="return_to" value="/scan/{{ nfc_tag_id }}" />
       <input type="file" name="photo" accept="image/*" capture="environment" required class="w-full border rounded-lg px-3 py-2" />
       <input name="caption" placeholder="Caption" class="w-full border rounded-lg px-3 py-2" />
       <textarea name="notes" placeholder="Notes" class="w-full border rounded-lg px-3 py-2"></textarea>
@@ -72,7 +68,6 @@
   <div x-show="tab==='stage'" class="bg-white rounded-xl shadow p-4">
     <h2 class="font-semibold mb-2">Stage / Pot Update</h2>
     <form method="post" action="/plant/{{ plant.id }}/logs/stage-pot-update" class="space-y-2">
-      <input type="hidden" name="return_to" value="/scan/{{ nfc_tag_id }}" />
       <select name="current_stage" class="w-full border rounded-lg px-3 py-2">
         {% for item in stages %}
         <option value="{{ item }}" {% if plant.current_stage.value == item %}selected{% endif %}>{{ item }}</option>
