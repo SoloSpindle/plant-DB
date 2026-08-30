@@ -1,0 +1,17 @@
+[Unit]
+Description=Plant NFC Tracker FastAPI Service
+After=network.target
+
+[Service]
+Type=simple
+User=REPLACE_WITH_USER
+Group=REPLACE_WITH_GROUP
+WorkingDirectory=/opt/plant-nfc-tracker
+Environment="HOST=0.0.0.0"
+Environment="PORT=8000"
+ExecStart=/opt/plant-nfc-tracker/run.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

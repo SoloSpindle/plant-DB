@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ plant.name }} · Plant NFC Tracker{% endblock %}
+{% block content %}
+<div class="space-y-4">
+  <div class="bg-white rounded-xl shadow p-4">
+    <h1 class="text-2xl font-semibold">{{ plant.name }}</h1>
+    <p class="text-gray-600">{{ plant.strain_name }}{% if plant.phenotype_code %} · {{ plant.phenotype_code }}{% endif %}</p>
+    {% if plant.nfc_tag_id %}
+    <p class="text-xs text-gray-500 mt-1">NFC Tag: {{ plant.nfc_tag_id }}</p>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-3">Metadata Editor</h2>
+    <form method="post" action="/plant/{{ plant.id }}/update" class="space-y-2">
+      <input name="name" value="{{ plant.name }}" required class="w-full border rounded-lg px-3 py-2" />
+      <input name="strain_name" value="{{ plant.strain_name }}" required class="w-full border rounded-lg px-3 py-2" />
+      <input type="date" name="sprout_date" value="{{ plant.sprout_date.isoformat() }}" required class="w-full border rounded-lg px-3 py-2" />
+      <select name="current_stage" class="w-full border rounded-lg px-3 py-2">
+        {% for stage in stages %}
+        <option value="{{ stage }}" {% if plant.current_stage.value == stage %}selected{% endif %}>{{ stage }}</option>
+        {% endfor %}
+      </select>
+      <input name="pot_size" value="{{ plant.pot_size }}" required class="w-full border rounded-lg px-3 py-2" />
+      <input name="substrate_type" value="{{ plant.substrate_type }}" required class="w-full border rounded-lg px-3 py-2" />
+      <input name="nutrient_line" value="{{ plant.nutrient_line }}" required class="w-full border rounded-lg px-3 py-2" />
+      <input name="phenotype_code" value="{{ plant.phenotype_code or '' }}" placeholder="Phenotype code" class="w-full border rounded-lg px-3 py-2" />
+      <input name="nfc_tag_id" value="{{ plant.nfc_tag_id or '' }}" placeholder="NFC tag ID" class="w-full border rounded-lg px-3 py-2" />
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" min="1" max="5" name="care_maintenance_rating" value="{{ plant.care_maintenance_rating or '' }}" placeholder="Care rating 1-5" class="w-full border rounded-lg px-3 py-2" />
+        <input type="number" min="1" max="5" name="overall_pheno_rating" value="{{ plant.overall_pheno_rating or '' }}" placeholder="Pheno rating 1-5" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+      <select name="status" class="w-full border rounded-lg px-3 py-2">
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if plant.status.value == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <textarea name="notes" class="w-full border rounded-lg px-3 py-2" placeholder="Notes">{{ plant.notes or '' }}</textarea>
+      <button class="w-full bg-green-700 text-white rounded-lg py-2">Save Metadata</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-3">Photo Gallery</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      {% for photo in photos %}
+      <div class="bg-gray-50 rounded-lg p-2">
+        <img src="{{ photo.file_path }}" alt="Plant photo" class="w-full h-28 object-cover rounded" />
+        <p class="text-xs mt-1 text-gray-700">{{ photo.caption or 'No caption' }}</p>
+      </div>
+      {% else %}
+      <p class="text-sm text-gray-500 col-span-full">No photos yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-3">Timeline</h2>
+    <div class="space-y-2">
+      {% for log in logs %}
+      <div class="border rounded-lg p-3">
+        <div class="flex justify-between text-sm">
+          <span class="font-medium">{{ log.log_type.value }}</span>
+          <span class="text-gray-500">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+        <div class="text-sm text-gray-700 mt-1">
+          {% if log.training_type %}<p>Training: {{ log.training_type }}</p>{% endif %}
+          {% if log.input_ph is not none %}<p>Input pH: {{ log.input_ph }}</p>{% endif %}
+          {% if log.input_ec is not none %}<p>Input EC: {{ log.input_ec }}</p>{% endif %}
+          {% if log.runoff_ph is not none %}<p>Runoff pH: {{ log.runoff_ph }}</p>{% endif %}
+          {% if log.runoff_ec is not none %}<p>Runoff EC: {{ log.runoff_ec }}</p>{% endif %}
+          {% if log.notes %}<p>{{ log.notes }}</p>{% endif %}
+          {% if log.photo_url %}<img src="{{ log.photo_url }}" alt="Log photo" class="mt-2 rounded max-h-48" />{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <p class="text-sm text-gray-500">No timeline logs yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

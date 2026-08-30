@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Plant NFC Tracker{% endblock %}
+{% block content %}
+<form method="get" class="bg-white rounded-xl shadow p-3 mb-4 space-y-2">
+  <input name="q" value="{{ filters.q }}" placeholder="Search by plant or strain"
+         class="w-full border rounded-lg px-3 py-2" />
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <select name="stage" class="border rounded-lg px-3 py-2">
+      <option value="">All stages</option>
+      {% for item in stages %}
+      <option value="{{ item }}" {% if filters.stage == item %}selected{% endif %}>{{ item }}</option>
+      {% endfor %}
+    </select>
+    <select name="strain" class="border rounded-lg px-3 py-2">
+      <option value="">All strains</option>
+      {% for item in strains %}
+      <option value="{{ item }}" {% if filters.strain == item %}selected{% endif %}>{{ item }}</option>
+      {% endfor %}
+    </select>
+    <select name="pot_size" class="border rounded-lg px-3 py-2">
+      <option value="">All pot sizes</option>
+      {% for item in pot_sizes %}
+      <option value="{{ item }}" {% if filters.pot_size == item %}selected{% endif %}>{{ item }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="w-full bg-green-700 text-white rounded-lg py-2">Apply Filters</button>
+</form>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+  {% for card in cards %}
+  <a href="/plant/{{ card.plant.id }}" class="bg-white rounded-xl shadow p-3 block">
+    <div class="flex justify-between items-start gap-2">
+      <div>
+        <h2 class="font-semibold text-lg">{{ card.plant.name }}</h2>
+        <p class="text-sm text-gray-600">{{ card.plant.strain_name }}</p>
+      </div>
+      <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{{ card.plant.current_stage.value }}</span>
+    </div>
+    <div class="text-sm mt-3 space-y-1">
+      <p>🌱 Sprout: <strong>{{ card.days_since_sprout }} days ago</strong></p>
+      <p>🔄 Stage Duration: <strong>{{ card.days_in_stage }} days</strong></p>
+      <p>💧 Last watered:
+        <strong>{% if card.last_watered %}{{ card.last_watered.strftime('%Y-%m-%d %H:%M') }}{% else %}No record{% endif %}</strong>
+      </p>
+      <p>🪴 Pot: <strong>{{ card.plant.pot_size }}</strong></p>
+    </div>
+  </a>
+  {% else %}
+  <div class="bg-white rounded-xl shadow p-4 text-center text-gray-600 col-span-full">
+    No active plants match your filters.
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
