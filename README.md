@@ -54,6 +54,28 @@ The app automatically creates:
 - `./app/static/uploads/`
 - SQLite schema (`./data/app.db`)
 
+## Grow Area Schema (Phase 1)
+
+Phase 1 adds schema + migrations for area-aware cultivation tracking. No UI/routes are changed yet.
+
+New tables:
+
+- `grow_areas`: indoor/outdoor area records (type, dimensions, notes)
+- `plant_area_assignments`: plant-to-area history with `start_at`/`end_at` (one active area per plant)
+- `area_light_schedules`: fixed/sunlight/hybrid schedule settings with optional time-of-day and hour fields
+- `area_env_targets`: per-area min/max target ranges for air temp, humidity, vpd, soil temp, water content %, soil ec, co2, ppfd
+- `area_readings`: timestamped actual area readings (manual/import/sensor source-ready)
+- `area_equipment`: equipment inventory by area (type/name/model/serial/notes)
+- `fertilizer_products`: fertilizer catalog (brand/product/formulation/npk)
+- `nutrient_applications`: nutrient events linked to area and optionally plant, tied to fertilizer products
+- `area_alerts`: out-of-range alert records tied to area and optionally a reading
+
+Migration notes:
+
+- Alembic is now included for deterministic schema migration scripts.
+- Phase 1 migration file: `migrations/versions/a288e5a1186c_add_grow_area_phase1_schema.py`
+- Apply migrations with: `alembic upgrade head`
+
 ## NFC Tools Pro URL Records
 
 Write URLs to chips in NFC Tools Pro using one of these patterns:
