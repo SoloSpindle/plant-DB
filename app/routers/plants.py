@@ -80,8 +80,9 @@ def dashboard(
     ]
 
     return templates.TemplateResponse(
-        "dashboard.html",
-        {
+        request=request,
+        name="dashboard.html",
+        context={
             "request": request,
             "cards": cards,
             "stages": [s.value for s in PlantStage],
@@ -95,8 +96,9 @@ def dashboard(
 @router.get("/plants/new")
 def new_plant_form(request: Request):
     return templates.TemplateResponse(
-        "plant_form.html",
-        {
+        request=request,
+        name="plant_form.html",
+        context={
             "request": request,
             "stages": [s.value for s in PlantStage],
             "statuses": [s.value for s in PlantStatus],
@@ -159,8 +161,9 @@ def scan_view(request: Request, nfc_tag_id: str, db: Session = Depends(get_db)):
         .all()
     )
     return templates.TemplateResponse(
-        "scan.html",
-        {
+        request=request,
+        name="scan.html",
+        context={
             "request": request,
             "nfc_tag_id": nfc_tag_id,
             "plant": plant,
@@ -201,8 +204,9 @@ def plant_detail(request: Request, plant_id: int, db: Session = Depends(get_db))
     photos = sorted(plant.photos, key=lambda p: p.timestamp, reverse=True)
 
     return templates.TemplateResponse(
-        "plant_detail.html",
-        {
+        request=request,
+        name="plant_detail.html",
+        context={
             "request": request,
             "plant": plant,
             "logs": logs,
